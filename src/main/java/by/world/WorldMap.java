@@ -8,7 +8,7 @@ import java.util.Map;
 public class WorldMap {
 
     private int[][] size;
-    private Map<Position, Entity> entities = new HashMap<>();
+    private List<Entity> entities = new ArrayList<>();
     private String entityMark;
 
     public WorldMap(int x, int y) {
@@ -21,7 +21,7 @@ public class WorldMap {
         } else if (entity.getPosition().getY() > size[0].length || entity.getPosition().getY() < 0) {
             throw new IllegalArgumentException("wrong position y in " + entity.getEntityType());
         }
-        entities.put(entity.getPosition(), entity);
+        entities.add(entity);
     }
 
     public void render() {
@@ -31,7 +31,7 @@ public class WorldMap {
 
         for (int i = 0; i < y; i++) {
             for (int j = 0; j < x; j++) {
-                if(isPositionFree(j, i)) {
+                if(isPositionFree(j+1, i+1)) {
                     System.out.print(".");
                 } else {
                     System.out.print(entityMark);
@@ -44,20 +44,20 @@ public class WorldMap {
     }
 
     public boolean isPositionFree(int x, int y) {
-        Position position = new Position(x+1, y+1);
-        Entity entity = entities.get(position);
+        Position position = new Position(x, y);
 
-        if(entity == null) {
-            return true;
-        } else {
-            if(entity.getEntityType() == EntityType.GOAL) {
-                entityMark = "G";
-                return false;
-            } else {
-                entityMark = "S";
-                return false;
+        for (Entity entity : entities) {
+            if(entity.getPosition().equals(position)) {
+                if(entity.getEntityType() == EntityType.GOAL) {
+                    entityMark = "G";
+                    return false;
+                } else {
+                    entityMark = "S";
+                    return false;
+                }
             }
         }
+        return true;
     }
 
 }
